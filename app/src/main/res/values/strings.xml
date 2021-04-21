@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name" translatable="false">开心碰碰碰</string>
+    <string name="check_float_window_permission" translatable="false">检查悬浮窗权限</string>
+    <string name="stop_service" translatable="false">停止服务,关闭所有窗口</string>
+    <string name="has_float_permission" translatable="false">可以添加悬浮窗</string>
+    <string name="no_float_permission" translatable="false">没有悬浮窗权限</string>
+    <string name="go_t0_open_float_ask" translatable="false">前往打开悬浮窗权限吗？</string>
+    <string name="close" translatable="false">点击关闭</string>
+    <string name="full_screen_touch_able" translatable="false">全屏拦截触摸事件</string>
+    <string name="full_screen_touch_disable" translatable="false">全屏不拦截触摸事件</string>
+    <string name="not_full_screen_touch_able" translatable="false">非全屏拦截触摸事件</string>
+    <string name="not_full_screen_touch_disable" translatable="false">非全屏不拦截触摸事件</string>
+    <string name="request_focus_interact_with_input" translatable="false">占用焦点，可以和输入法交互</string>
+    <string name="float_fluent_anim" translatable="false">悬浮窗size变化流畅动画</string>
+    <string name="back_home" translatable="false">回到桌面</string>
+</resources>
