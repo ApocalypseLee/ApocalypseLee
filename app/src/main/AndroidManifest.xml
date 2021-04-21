@@ -1,57 +1,117 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.yt.apps"
-    android:installLocation="auto">
-
-    <uses-feature android:glEsVersion="0x00020000" />
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.yt.apps">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+
+    <!--联运SDK监听网络状态变化，在支付登录过程中做一些异常处理-->
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <!--读取imei 这个要动态获取 否则数据统计会异常-->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <!--联运sdk写入内容到sd卡-->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        tools:ignore="ScopedStorage" />
+    <!--强制安装联运APK时，需要从SDK中读取APK文件-->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <!--判断游戏是否是在主进程初始化，避免初始化进程错误导致功能不可用-->
+    <uses-permission android:name="android.permission.GET_TASKS" />
+    <!--获取安装权限-->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+
+    <!--可选权限-->
+    <!--如果需要精确定位的话请加上此权限-->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <!-- 熄屏后唤醒需要加此权限，并且需要保证开启android.permission.WAKE_LOCK-->
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
+    <!-- 用于横幅的全屏通知权限 -->
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+    <!-- 用于弹出悬浮窗的后台权限 -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <!-- 用于弹出悬浮窗的悬浮窗权限 -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <!-- 防止进程被杀的电量优化白名单 -->
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+    <!-- 如果接入了视频相关的广告, 请务必添加否则黑屏 -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
+        android:name=".MyApplication"
         android:allowBackup="true"
+        android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:usesCleartextTraffic="true">
-
-        <receiver
-            android:name=".AlarmReceiver"
-            android:enabled="true"
-            android:exported="true">
-            <intent-filter android:priority="1000">
-                <action android:name="loackScreenAlarm" />
-            </intent-filter>
-        </receiver>
-
-        <service
-            android:name=".AlarmService"
-            android:enabled="true"
-            android:exported="true" />
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.MyApplication"
+        android:usesCleartextTraffic="true"
+        tools:ignore="Instantiatable">
 
         <activity
-            android:name=".AppActivity"
+            android:name=".FullscreenActivity"
             android:configChanges="orientation|keyboardHidden|screenSize|screenLayout"
             android:label="@string/app_name"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:taskAffinity=""
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+            android:theme="@style/Theme.MyApplication.Fullscreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
+        <!--自定义熄屏弹出通知窗口 -->
         <activity
-            android:name="org.cocos2dx.javascript.AlarmActivity"
+            android:name=".AlarmActivity"
             android:excludeFromRecents="true"
             android:launchMode="singleInstance"
             android:taskAffinity=""
             android:theme="@android:style/Theme.Wallpaper.NoTitleBar" />
+        <!--广告的app外浮窗 -->
+        <activity
+            android:name=".AdActivity"
+            android:excludeFromRecents="true"
+            android:launchMode="singleInstance"
+            android:taskAffinity=""
+            android:theme="@android:style/Theme.Wallpaper.NoTitleBar" />
+        <!--开屏广告 -->
+        <activity
+            android:name=".SplashActivity"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
+
+        <!--自定义熄屏弹出通知窗口的弹出控制服务 -->
+        <service
+            android:name=".Services.RegisterServService"
+            android:enabled="true"
+            android:exported="true" />
+        <!--自定义浮窗控制服务 -->
+        <service
+            android:name=".Services.FloatWindowService"
+            android:enabled="true"
+            android:exported="true" />
+        <!--双保活 -->
+        <service
+            android:name=".Services.LocalDaemonService"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".Services.RemoteDaemonService"
+            android:enabled="true"
+            android:exported="true"
+            android:process=":RemoteProcess" />
+        <!--音频保活 -->
+        <service
+            android:name=".Services.AudioDaemonService"
+            android:enabled="true"
+            android:exported="true"
+            android:process=":AudioDaemon" />
+
     </application>
 
 </manifest>

@@ -1,37 +1,27 @@
-import org.apache.tools.ant.taskdefs.condition.Os
-
-apply plugin: 'com.android.application'
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+}
 
 android {
     aaptOptions.cruncherEnabled = false;
-    compileSdkVersion PROP_COMPILE_SDK_VERSION.toInteger()
-    buildToolsVersion PROP_BUILD_TOOLS_VERSION
+    dexOptions { javaMaxHeapSize "4g" }
+    compileSdkVersion 30
+    buildToolsVersion "30.0.3"
 
-    defaultConfig {
-        applicationId "org.pinball.games"
-        minSdkVersion PROP_MIN_SDK_VERSION
-        targetSdkVersion PROP_TARGET_SDK_VERSION
-        versionCode 1
-        versionName "1.0.0"
-        multiDexEnabled true
-        }
-
-    sourceSets.main {
-        java.srcDirs "../src", "src"
-        res.srcDirs "../res", 'res'
-        jniLibs.srcDirs "../libs", 'libs'
-        manifest.srcFile "AndroidManifest.xml"
+    buildFeatures {
+        viewBinding true
     }
 
-    signingConfigs {
-       release {
-            if (project.hasProperty("RELEASE_STORE_FILE")) {
-                storeFile file(RELEASE_STORE_FILE)
-                storePassword RELEASE_STORE_PASSWORD
-                keyAlias RELEASE_KEY_ALIAS
-                keyPassword RELEASE_KEY_PASSWORD
-            }
-        }
+    defaultConfig {
+        applicationId "com.yt.apps"
+        minSdkVersion 16
+        targetSdkVersion 30
+        versionCode 1
+        versionName "1.0"
+        multiDexEnabled true
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -41,28 +31,41 @@ android {
             renderscriptDebuggable false
             minifyEnabled true
             shrinkResources true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            if (project.hasProperty("RELEASE_STORE_FILE")) {
-                signingConfig signingConfigs.release
-            }
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
-
         debug {
             debuggable true
             jniDebuggable true
             renderscriptDebuggable true
-            signingConfig signingConfigs.release
         }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
     }
 }
 
 dependencies {
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    testImplementation 'junit:junit:4.+'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+
     implementation 'com.squareup.leakcanary:leakcanary-android:1.5.4'
-    api 'com.android.support:appcompat-v7:28.0.0'
+
     implementation 'com.android.support:appcompat-v7:28.0.0'
     implementation 'junit:junit:4.12'
     implementation 'com.blankj:utilcode:1.22.7'
     api 'com.google.guava:guava:27.0.1-android'
     implementation 'com.android.support:multidex:1.0.3'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+
+    implementation 'com.google.android.instantapps:instantapps:1.1.0'
+    implementation 'com.google.android.gms:play-services-instantapps:17.0.0'
 }

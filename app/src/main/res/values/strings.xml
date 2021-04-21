@@ -1,5 +1,8 @@
 <resources>
-    <string name="app_name" translatable="false">开心碰碰碰</string>
+    <string name="app_name">My Application</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+
     <string name="check_float_window_permission" translatable="false">检查悬浮窗权限</string>
     <string name="stop_service" translatable="false">停止服务,关闭所有窗口</string>
     <string name="has_float_permission" translatable="false">可以添加悬浮窗</string>
