@@ -120,7 +120,9 @@ class FullscreenActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode > 0) {
-            NotificationUtils.notificationGuide(this)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                NotificationUtils.notificationGuide(this)
+            }
             checkBatteryPermission()
             checkFWPermission()
         }
