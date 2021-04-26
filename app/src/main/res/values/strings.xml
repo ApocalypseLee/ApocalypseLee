@@ -16,4 +16,13 @@
     <string name="request_focus_interact_with_input" translatable="false">占用焦点，可以和输入法交互</string>
     <string name="float_fluent_anim" translatable="false">悬浮窗size变化流畅动画</string>
     <string name="back_home" translatable="false">回到桌面</string>
+    <string name="title_activity_login">登录</string>
+    <string name="prompt_phone">手机号码</string>
+    <string name="prompt_password">密码</string>
+    <string name="action_sign_in">登录/注册</string>
+    <string name="action_sign_in_short">登录</string>
+    <string name="welcome">"登录成功"</string>
+    <string name="invalid_username">非法的用户名</string>
+    <string name="invalid_password">密码长度必须大于5个字符</string>
+    <string name="login_failed">"登录失败"</string>
 </resources>
