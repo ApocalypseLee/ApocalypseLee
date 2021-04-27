@@ -37,7 +37,7 @@
         android:usesCleartextTraffic="true"
         tools:ignore="Instantiatable">
         <activity
-            android:name=".ui.login.LoginActivity"
+            android:name=".LoginActivity"
             android:label="@string/title_activity_login"></activity>
         <activity
             android:name=".FullscreenActivity"
