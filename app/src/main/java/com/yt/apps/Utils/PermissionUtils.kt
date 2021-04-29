@@ -6,13 +6,11 @@ import android.app.AppOpsManager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.Binder
-import android.os.Build
-import android.os.PowerManager
-import android.os.Process
+import android.os.*
 import android.provider.Settings
 import androidx.annotation.RequiresApi
 import com.blankj.utilcode.util.AppUtils
+import com.yt.apps.Constants
 import com.yt.apps.MyApplication
 import com.yt.apps.R
 import com.yt.apps.Services.FloatWindowService
@@ -39,7 +37,7 @@ object PermissionUtils {
         }
     }
 
-    fun showOpenPermissionDialog(context: Context) {
+    fun showOpenPermissionDialog(context: Context, handler: Handler) {
         val builder = AlertDialog.Builder(context)
         builder.setTitle(R.string.no_float_permission)
         builder.setMessage(R.string.go_t0_open_float_ask)
@@ -51,10 +49,14 @@ object PermissionUtils {
             val intent = Intent(context.applicationContext, FloatWindowService::class.java)
             intent.action = FloatWindowService.ACTION_CHECK_PERMISSION_AND_TRY_ADD
             context.startService(intent)
+            handler.sendEmptyMessage(Constants.checkPermission)
         }
         builder.setNegativeButton(
             android.R.string.cancel
-        ) { dialog, which -> dialog.dismiss() }
+        ) { dialog, which ->
+            dialog.dismiss()
+            handler.sendEmptyMessage(Constants.checkPermission)
+        }
         builder.show()
     }
 

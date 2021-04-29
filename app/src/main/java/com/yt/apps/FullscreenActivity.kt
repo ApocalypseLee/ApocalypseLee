@@ -1,10 +1,9 @@
 package com.yt.apps
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Intent
-import android.os.Build
-import android.os.Bundle
-import android.os.Handler
+import android.os.*
 import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
@@ -13,9 +12,11 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.NotificationManagerCompat
 import com.yt.apps.Services.*
 import com.yt.apps.Utils.NotificationUtils
 import com.yt.apps.Utils.PermissionUtils
+import java.lang.ref.WeakReference
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -25,6 +26,7 @@ class FullscreenActivity : AppCompatActivity() {
     private lateinit var fullscreenContent: TextView
     private lateinit var fullscreenContentControls: LinearLayout
     private val hideHandler = Handler()
+    private val mHandler = MyHandler(this)
 
     companion object {
         /**
@@ -120,10 +122,6 @@ class FullscreenActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode > 0) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                NotificationUtils.notificationGuide(this)
-            }
-            checkBatteryPermission()
             checkFWPermission()
         }
     }
@@ -203,35 +201,21 @@ class FullscreenActivity : AppCompatActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             startForegroundService(audio)
         } else startService(audio)
-    }
 
-    private fun checkBatteryPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val batteryPermission: Boolean =
-                PermissionUtils.isIgnoringBatteryOptimizations(this)
-            if (!batteryPermission) {
-                PermissionUtils.requestIgnoreBatteryOptimizations(this)
-            }
-        }
+
+        val notificationUtils = NotificationUtils(this)
+        notificationUtils.clearAllNotification()
+        val content = ""
+        notificationUtils.sendNotificationFullScreen(
+            FullscreenActivity::class.java,
+            getString(R.string.app_name), content, Intent.ACTION_BOOT_COMPLETED, 0
+        )
     }
 
     private fun checkFWPermission() {
         val permission = PermissionUtils.checkOPsPermission(applicationContext)
-        if (permission /*&& !RomUtils.isVivoRom()*/) {
-            if (Constants.isDebug) {
-                Toast.makeText(this, R.string.has_float_permission, Toast.LENGTH_SHORT).show()
-            }
-            val intent = Intent(applicationContext, FloatWindowService::class.java)
-            intent.action = FloatWindowService.ACTION_CHECK_PERMISSION_AND_TRY_ADD
-            startService(intent)
-        } else {
-            if (Constants.isDebug) {
-                Toast.makeText(this, R.string.no_float_permission, Toast.LENGTH_SHORT).show()
-            }
-            PermissionUtils.showOpenPermissionDialog(this)
-        }
+        mHandler.sendEmptyMessage(if (permission) Constants.checkFWSucc else Constants.checkFWFail)
     }
-
 
     //********************************************************************************************************************************************
     // 双进程保活机制 相关函数
@@ -252,5 +236,60 @@ class FullscreenActivity : AppCompatActivity() {
         Constants.isOpenServiceDefend = Constants.stopServiceDefend //结束进程守护
         stopRemoteService()
         stopBackService()
+    }
+
+    private class MyHandler(activity: Activity) : Handler(Looper.getMainLooper()) {
+        private val mActivity: WeakReference<Activity> = WeakReference(activity)
+        override fun handleMessage(msg: Message) {
+            val what = msg.what
+            when (what) {
+                Constants.checkFWSucc -> checkBatteryPermission()
+                Constants.checkFWFail -> {
+                    if (Constants.isDebug) {
+                        Toast.makeText(
+                            mActivity.get()!!.applicationContext,
+                            R.string.no_float_permission,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    PermissionUtils.showOpenPermissionDialog(
+                        mActivity.get()!!.applicationContext,
+                        this
+                    )
+                }
+                Constants.checkBatterySucc -> checkNotification()
+                Constants.checkBatteryFail -> {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        PermissionUtils.requestIgnoreBatteryOptimizations(
+                            mActivity.get()!!.applicationContext
+                        )
+                    }
+                    checkNotification()
+                }
+                Constants.checkNotifySucc -> {
+                }
+                Constants.checkNotifyFail -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    NotificationUtils.notificationGuide(mActivity.get()!!.applicationContext)
+                }
+                Constants.checkPermission -> checkBatteryPermission()
+            }
+        }
+
+        fun checkBatteryPermission() {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                val batteryPermission = PermissionUtils.isIgnoringBatteryOptimizations(
+                    mActivity.get()!!.applicationContext
+                )
+                sendEmptyMessage(if (batteryPermission) Constants.checkBatteryFail else Constants.checkBatterySucc)
+            }
+        }
+
+        fun checkNotification() {
+            val permission: Boolean =
+                NotificationManagerCompat.from(mActivity.get()!!.applicationContext)
+                    .areNotificationsEnabled()
+            sendEmptyMessage(if (permission) Constants.checkNotifySucc else Constants.checkNotifyFail)
+        }
+
     }
 }

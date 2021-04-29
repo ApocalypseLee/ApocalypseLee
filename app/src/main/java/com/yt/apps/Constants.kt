@@ -13,4 +13,13 @@ object Constants {
     var isDeepLink = false
     const val isDebug = true
 
+    const val checkFWSucc = 0
+    const val checkFWFail = 1
+    const val checkBatterySucc = 2
+    const val checkBatteryFail = 3
+    const val checkNotifySucc = 4
+    const val checkNotifyFail = 5
+    const val checkPermission = 6
+
+
 }
