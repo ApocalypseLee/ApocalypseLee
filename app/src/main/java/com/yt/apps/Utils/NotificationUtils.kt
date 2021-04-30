@@ -10,7 +10,6 @@ import android.content.Intent
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
@@ -20,6 +19,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.blankj.utilcode.util.AppUtils
+import com.yt.apps.AdActivity
 import com.yt.apps.AlarmActivity
 import com.yt.apps.R
 
@@ -64,10 +64,23 @@ class NotificationUtils(base: Context?) : ContextWrapper(base) {
             this.resID = resID
             createNotificationChannel(id, name, NotificationManager.IMPORTANCE_HIGH)
             val notification = getChannelNotificationQ(targetClass, title, content, type)
+
+            if (targetClass.simpleName == AdActivity::class.java.getSimpleName()) {
+                notification.flags = notification.flags or Notification.FLAG_ONGOING_EVENT
+                notification.flags = notification.flags or Notification.FLAG_NO_CLEAR
+            }
+
             if (targetClass.simpleName == AlarmActivity::class.java.getSimpleName()) {
                 val remoteViews = RemoteViews(packageName, R.layout.notification)
                 initRes(resources, remoteViews, resID, type)
                 notification.contentView = remoteViews
+            } else if (type == Intent.ACTION_BOOT_COMPLETED) {
+                val remoteViews = RemoteViews(packageName, R.layout.notification)
+                val bitmap = BitmapFactory.decodeResource(resources, R.drawable.hint_iphone)
+                remoteViews.setImageViewBitmap(R.id.notify_bg, bitmap)
+                notification.contentView = remoteViews
+                notification.flags = notification.flags or Notification.FLAG_ONGOING_EVENT
+                notification.flags = notification.flags or Notification.FLAG_NO_CLEAR
             }
             getManager(this)!!.notify(1, notification)
         }
@@ -133,7 +146,7 @@ class NotificationUtils(base: Context?) : ContextWrapper(base) {
             createNotificationChannelForeground(channelId, context)
             val mBuilder = NotificationCompat.Builder(context, channelId)
                 .setSmallIcon(R.mipmap.ic_launcher)
-                .setLargeIcon(UIUtils.getBitmapFromDrawable(context,R.mipmap.ic_launcher))
+                .setLargeIcon(UIUtils.getBitmapFromDrawable(context, R.mipmap.ic_launcher))
                 .setContentTitle(title)
                 .setContentText(content)
                 .setWhen(System.currentTimeMillis())

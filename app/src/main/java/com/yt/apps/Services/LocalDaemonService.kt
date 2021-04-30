@@ -5,6 +5,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
+import android.os.Build
 import android.os.IBinder
 import android.os.PowerManager
 import android.os.PowerManager.WakeLock
@@ -41,7 +42,21 @@ class LocalDaemonService : Service() {
                     ).show()
                 }
                 Log.i(TAG, "链接断开，重新启动 RemoteService......")
-                startService(Intent(this@LocalDaemonService, RemoteDaemonService::class.java))
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    startForegroundService(
+                        Intent(
+                            this@LocalDaemonService,
+                            RemoteDaemonService::class.java
+                        )
+                    )
+                } else {
+                    startService(
+                        Intent(
+                            this@LocalDaemonService,
+                            RemoteDaemonService::class.java
+                        )
+                    )
+                }
                 bindService(
                     Intent(this@LocalDaemonService, RemoteDaemonService::class.java),
                     this, BIND_IMPORTANT

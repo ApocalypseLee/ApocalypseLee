@@ -1,10 +1,13 @@
 package com.yt.apps.Services
 
+import android.app.Notification
 import android.app.Service
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
+import android.graphics.BitmapFactory
+import android.os.Build
 import android.os.IBinder
 import android.os.PowerManager
 import android.os.PowerManager.WakeLock
@@ -13,10 +16,13 @@ import android.util.Log
 import android.widget.Toast
 import com.yt.apps.Constants
 import com.yt.apps.IMyAidlInterface
+import com.yt.apps.R
+import com.yt.apps.Utils.NotificationUtils
 import java.util.*
 
 class RemoteDaemonService : Service() {
     private val TAG = RemoteDaemonService::class.java.simpleName
+    val NOTIFICATION_CHANNEL_ID = RemoteDaemonService::class.java.simpleName
     private var mBinder: MyBinder? = null
     private var timer: Timer? = null
     private var count = 0
@@ -67,6 +73,21 @@ class RemoteDaemonService : Service() {
                     Log.i("RemoteService", "==" + count++)
                 }
             }, 0, 1000)
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            //前台服务通知
+            val title = ""
+            val content = ""
+            val bitmap = BitmapFactory.decodeResource(resources, R.drawable.hint_money2)
+            val notification: Notification? = NotificationUtils.getForegroundNotification(
+                this@RemoteDaemonService,
+                NOTIFICATION_CHANNEL_ID,
+                title,
+                content,
+                bitmap
+            )
+            startForeground(1, notification)
         }
     }
 
