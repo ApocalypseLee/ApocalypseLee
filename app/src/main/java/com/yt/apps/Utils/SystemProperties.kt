@@ -5,11 +5,14 @@ import android.app.ActivityManager
 import android.app.ActivityManager.RunningAppProcessInfo
 import android.content.Context
 import android.content.pm.PackageManager
+import android.os.Environment
 import android.text.TextUtils
 import android.util.Log
-import android.view.View
 import android.widget.Toast
-import androidx.core.content.ContextCompat.getSystemService
+import java.io.BufferedReader
+import java.io.File
+import java.io.FileReader
+import java.io.IOException
 import java.lang.reflect.Method
 
 
@@ -82,7 +85,7 @@ object SystemProperties {
         val am = activity.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager?
         val infoList = am!!.runningAppProcesses
         val serviceInfos = am.getRunningServices(100)
-        val beforeMem = getAvailMemory(activity)
+        val beforeMem = getAvailableMemory(activity)
         Log.d(TAG, "-----------before memory info : $beforeMem")
         var count = 0
         val pm: PackageManager = activity.packageManager
@@ -113,13 +116,13 @@ object SystemProperties {
                 }
             }
         }
-        val afterMem = getAvailMemory(activity)
+        val afterMem = getAvailableMemory(activity)
         Log.d(TAG, "----------- after memory info : $afterMem")
         Toast.makeText(activity, "clear " + count + " process, "
                 + (afterMem - beforeMem) + "M", Toast.LENGTH_LONG).show()
     }
 
-    private fun getAvailMemory(activity: Activity): Long {
+    fun getAvailableMemory(activity: Activity): Long {
         // 获取android当前可用内存大小
         val am = activity.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager?
         val mi = ActivityManager.MemoryInfo()
@@ -130,5 +133,107 @@ object SystemProperties {
         return mi.availMem / (1024 * 1024)
     }
 
+    fun getTotalMemory(activity: Activity): Long {
+        val am = activity.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager?
+        val mi = ActivityManager.MemoryInfo()
+        am!!.getMemoryInfo(mi)
+        Log.d(TAG, "总内存---->>>" + mi.totalMem / (1024 * 1024))
+        return mi.totalMem / (1024 * 1024)
+    }
 
+    fun getUsedPercentValue(activity: Activity): String {
+        val dir = "/proc/meminfo"
+        try {
+            val fr = FileReader(dir)
+            val br = BufferedReader(fr, 2048)
+            val memoryLine = br.readLine()
+            val subMemoryLine = memoryLine.substring(memoryLine.indexOf("MemTotal:"))
+            br.close()
+            val totalMemorySize = subMemoryLine.replace("\\D+".toRegex(), "").toInt().toLong()
+            val availableSize: Long = getAvailableMemory(activity) / 1024
+            val percent =
+                ((totalMemorySize - availableSize) / totalMemorySize.toFloat() * 100).toInt()
+            return "$percent%"
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+        return "none"
+    }
+
+    /**
+     * 获取整体缓存大小
+     * @param context
+     * @return
+     * @throws Exception
+     */
+    @Throws(Exception::class)
+    fun getTotalCacheSize(context: Context): String {
+        var cacheSize = getFolderSize(context.getCacheDir())
+        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            cacheSize += getFolderSize(context.getExternalCacheDir()!!)
+        }
+        return getFormatSize(cacheSize)
+    }
+
+    /**
+     * 获取文件
+     * Context.getExternalFilesDir() --> SDCard/Android/data/你的应用的包名/files/ 目录，一般放一些长时间保存的数据
+     * Context.getExternalCacheDir() --> SDCard/Android/data/你的应用包名/cache/目录，一般存放临时缓存数据
+     * @param file
+     * @return
+     * @throws Exception
+     */
+    @Throws(Exception::class)
+    fun getFolderSize(file: File): Long {
+        var size: Long = 0
+        try {
+            val fileList = file.listFiles()
+            for (i in fileList.indices) {
+                // 如果下面还有文件
+                size = if (fileList[i].isDirectory) {
+                    size + getFolderSize(fileList[i])
+                } else {
+                    size + fileList[i].length()
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return size
+    }
+
+    /**
+     * 格式化单位
+     * @param size
+     */
+    fun getFormatSize(size: Long): String {
+        val kb = size / 1024
+        val m = (kb / 1024).toInt()
+        val kbs = (kb % 1024).toInt()
+        return m.toString() + "." + kbs + "M"
+    }
+
+    /**
+     * 清空方法
+     * @param context
+     */
+    fun clearAllCache(context: Context) {
+        deleteDir(context.getCacheDir())
+        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            deleteDir(context.getExternalCacheDir())
+        }
+    }
+
+    private fun deleteDir(dir: File?): Boolean {
+        if (dir != null && dir.isDirectory) {
+            val children = dir.list()
+            for (i in children.indices) {
+                val success = deleteDir(File(dir, children[i]))
+                if (!success) {
+                    return false
+                }
+            }
+        }
+        return dir!!.delete()
+    }
 }

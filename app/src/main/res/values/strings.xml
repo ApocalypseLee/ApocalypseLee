@@ -16,13 +16,19 @@
     <string name="request_focus_interact_with_input" translatable="false">占用焦点，可以和输入法交互</string>
     <string name="float_fluent_anim" translatable="false">悬浮窗size变化流畅动画</string>
     <string name="back_home" translatable="false">回到桌面</string>
-    <string name="title_activity_login">登录</string>
-    <string name="prompt_phone">手机号码</string>
-    <string name="prompt_password">密码</string>
-    <string name="action_sign_in">登录/注册</string>
-    <string name="action_sign_in_short">登录</string>
-    <string name="welcome">"登录成功"</string>
-    <string name="invalid_username">非法的用户名</string>
-    <string name="invalid_password">密码长度必须大于5个字符</string>
-    <string name="login_failed">"登录失败"</string>
+    <string name="title_activity_login" translatable="false">登录</string>
+    <string name="prompt_phone" translatable="false">手机号码</string>
+    <string name="prompt_password" translatable="false">密码</string>
+    <string name="action_sign_in" translatable="false">登录/注册</string>
+    <string name="action_sign_in_short" translatable="false">登录</string>
+    <string name="welcome" translatable="false">"登录成功"</string>
+    <string name="invalid_username" translatable="false">非法的用户名</string>
+    <string name="invalid_password" translatable="false">密码长度必须大于5个字符</string>
+    <string name="login_failed" translatable="false">"登录失败"</string>
+    <string name="can_recycle" translatable="false">垃圾文件可清理</string>
+    <string name="acc_mem" translatable="false">内存加速</string>
+    <string name="mem_used" translatable="false">已使用</string>
+    <string name="acc_pls" translatable="false">请加速手机运行</string>
+    <string name="recycle" translatable="false">立即清理</string>
+    <string name="acc" translatable="false">立即加速</string>
 </resources>
