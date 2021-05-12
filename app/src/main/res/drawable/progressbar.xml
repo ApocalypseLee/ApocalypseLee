@@ -26,5 +26,5 @@
                     android:startColor="@color/colorGreenDark" />
             </shape>
         </clip>
-    </ item>
+    </item>
 </layer-list>
