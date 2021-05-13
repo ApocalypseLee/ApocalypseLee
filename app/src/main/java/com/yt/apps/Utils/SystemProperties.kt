@@ -104,12 +104,20 @@ object SystemProperties {
                     for (j in pkgList.indices) { //pkgList 得到该进程下运行的包名
                         var appName: String? = null
                         try {
-                            appName = pm.getApplicationLabel(pm.getApplicationInfo(pkgList[j], 0)) as String
+                            appName = pm.getApplicationLabel(
+                                pm.getApplicationInfo(
+                                    pkgList[j],
+                                    0
+                                )
+                            ) as String
                         } catch (e: PackageManager.NameNotFoundException) {
                             // TODO Auto-generated catch block
                             e.printStackTrace()
                         }
-                        Log.d(TAG, "It will be killed, package name : " + pkgList[j] + " -- " + appName)
+                        Log.d(
+                            TAG,
+                            "It will be killed, package name : " + pkgList[j] + " -- " + appName
+                        )
                         am.killBackgroundProcesses(pkgList[j])
                         count++
                     }
@@ -118,8 +126,10 @@ object SystemProperties {
         }
         val afterMem = getAvailableMemory(activity)
         Log.d(TAG, "----------- after memory info : $afterMem")
-        Toast.makeText(activity, "clear " + count + " process, "
-                + (afterMem - beforeMem) + "M", Toast.LENGTH_LONG).show()
+        Toast.makeText(
+            activity, "clear " + count + " process, "
+                    + (afterMem - beforeMem) + "M", Toast.LENGTH_LONG
+        ).show()
     }
 
     fun getAvailableMemory(activity: Activity): Long {
@@ -141,6 +151,21 @@ object SystemProperties {
         return mi.totalMem / (1024 * 1024)
     }
 
+    fun getUsedMemory(activity: Activity): Long {
+        val am = activity.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager?
+        val mi = ActivityManager.MemoryInfo()
+        am!!.getMemoryInfo(mi)
+        Log.d(TAG, "已用内存---->>>" + (mi.totalMem - mi.availMem) / (1024 * 1024))
+        return (mi.totalMem - mi.availMem) / (1024 * 1024)
+    }
+
+    fun isLowMemory(activity: Activity): Boolean {
+        val am = activity.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager?
+        val mi = ActivityManager.MemoryInfo()
+        am!!.getMemoryInfo(mi)
+        return mi.lowMemory
+    }
+
     fun getUsedPercentValue(activity: Activity): String {
         val dir = "/proc/meminfo"
         try {
@@ -150,7 +175,7 @@ object SystemProperties {
             val subMemoryLine = memoryLine.substring(memoryLine.indexOf("MemTotal:"))
             br.close()
             val totalMemorySize = subMemoryLine.replace("\\D+".toRegex(), "").toInt().toLong()
-            val availableSize: Long = getAvailableMemory(activity) / 1024
+            val availableSize: Long = getAvailableMemory(activity)
             val percent =
                 ((totalMemorySize - availableSize) / totalMemorySize.toFloat() * 100).toInt()
             return "$percent%"
@@ -169,6 +194,19 @@ object SystemProperties {
     @Throws(Exception::class)
     fun getTotalCacheSize(context: Context): String {
         var cacheSize = getFolderSize(context.getCacheDir())
+        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            cacheSize += getFolderSize(context.getExternalCacheDir()!!)
+        }
+        return getFormatSize(cacheSize)
+    }
+
+    fun getInnerCacheSize(context: Context): String {
+        val cacheSize = getFolderSize(context.getCacheDir())
+        return getFormatSize(cacheSize)
+    }
+
+    fun getExternalCacheSize(context: Context): String {
+        var cacheSize = 0L
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             cacheSize += getFolderSize(context.getExternalCacheDir()!!)
         }

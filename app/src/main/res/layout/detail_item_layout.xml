@@ -19,16 +19,15 @@
             tools:ignore="MissingConstraints">
 
             <TextView
-                android:id="@+id/textView0"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:layout_marginLeft="10dp"
-                android:text="共检测出"
+                android:text="@string/can_recycle0"
                 android:textSize="@dimen/text_size_16sp" />
 
             <TextView
-                android:id="@+id/textView1"
+                android:id="@+id/recy_mem0"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
@@ -39,12 +38,11 @@
 
 
             <TextView
-                android:id="@+id/textView2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:layout_marginLeft="10dp"
-                android:text="@string/stop_service"
+                android:text="@string/can_recycle1"
                 android:textSize="@dimen/text_size_16sp" />
 
         </LinearLayout>
@@ -64,7 +62,7 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/title0"
+                    android:id="@+id/recy_mem1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
@@ -75,12 +73,11 @@
 
 
                 <TextView
-                    android:id="@+id/content0"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:layout_marginLeft="20dp"
-                    android:text="@string/can_recycle"
+                    android:text="@string/can_recycle1"
                     android:textSize="@dimen/text_size_14sp" />
             </LinearLayout>
 
@@ -90,7 +87,7 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/title2"
+                    android:id="@+id/recy_mem2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
@@ -101,12 +98,11 @@
 
 
                 <TextView
-                    android:id="@+id/content2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:layout_marginLeft="20dp"
-                    android:text="@string/can_recycle"
+                    android:text="@string/can_recycle1"
                     android:textSize="@dimen/text_size_14sp" />
             </LinearLayout>
 
@@ -116,7 +112,7 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/title3"
+                    android:id="@+id/recy_mem3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
@@ -127,12 +123,11 @@
 
 
                 <TextView
-                    android:id="@+id/content3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:layout_marginLeft="20dp"
-                    android:text="@string/can_recycle"
+                    android:text="@string/can_recycle1"
                     android:textSize="@dimen/text_size_14sp" />
             </LinearLayout>
 

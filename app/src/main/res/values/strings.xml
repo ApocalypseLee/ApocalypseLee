@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">加速清理王</string>
-    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_button">下拉以刷新界面</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
 
     <string name="check_float_window_permission" translatable="false">检查悬浮窗权限</string>
@@ -25,7 +25,8 @@
     <string name="invalid_username" translatable="false">非法的用户名</string>
     <string name="invalid_password" translatable="false">密码长度必须大于5个字符</string>
     <string name="login_failed" translatable="false">"登录失败"</string>
-    <string name="can_recycle" translatable="false">垃圾文件可清理</string>
+    <string name="can_recycle0" translatable="false">共检测出</string>
+    <string name="can_recycle1" translatable="false">垃圾文件可清理</string>
     <string name="acc_mem" translatable="false">内存加速</string>
     <string name="mem_used" translatable="false">已使用</string>
     <string name="acc_pls" translatable="false">请加速手机运行</string>

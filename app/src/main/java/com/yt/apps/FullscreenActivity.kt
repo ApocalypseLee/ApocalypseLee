@@ -1,32 +1,31 @@
 package com.yt.apps
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Intent
 import android.os.*
 import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
-import android.widget.Button
-import android.widget.LinearLayout
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
+import android.widget.AbsListView.OnScrollListener
+import android.widget.AbsListView.OnScrollListener.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationManagerCompat
 import com.yt.apps.Services.*
 import com.yt.apps.Utils.NotificationUtils
 import com.yt.apps.Utils.PermissionUtils
-import java.lang.ref.WeakReference
+import com.yt.apps.Widgets.DetailAdapter
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
 class FullscreenActivity : AppCompatActivity() {
-    private lateinit var fullscreenContent: TextView
+    private lateinit var fullscreenContent: ListView
     private lateinit var fullscreenContentControls: LinearLayout
     private val hideHandler = Handler()
-    private val mHandler = MyHandler(this)
+    private lateinit var detailAdapter: DetailAdapter
+    private lateinit var mActivity: FullscreenActivity
 
     companion object {
         /**
@@ -92,13 +91,15 @@ class FullscreenActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        mActivity = this
         // 启动双进程保活机制
         startBackService()
         initTask()
         initContent()
 
-        val intent = Intent(this, SplashActivity::class.java)
-        startActivityForResult(intent, 1)
+        checkFWPermission()
+//        val intent = Intent(this, SplashActivity::class.java)
+//        startActivityForResult(intent, 1)
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -109,7 +110,10 @@ class FullscreenActivity : AppCompatActivity() {
 
         // Set up the user interaction to manually show or hide the system UI.
         fullscreenContent = findViewById(R.id.fullscreen_content)
-        fullscreenContent.setOnClickListener { toggle() }
+        fullscreenContent.setOnScrollListener(scrollListener)
+        detailAdapter = DetailAdapter(this, applicationContext)
+        detailAdapter.setContent()
+        fullscreenContent.adapter = detailAdapter
 
         fullscreenContentControls = findViewById(R.id.fullscreen_content_controls)
 
@@ -144,10 +148,44 @@ class FullscreenActivity : AppCompatActivity() {
         }
     }
 
+    val scrollListener: OnScrollListener = object : OnScrollListener {
+        override fun onScrollStateChanged(view: AbsListView, scrollState: Int) {
+            when (scrollState) {
+                SCROLL_STATE_FLING -> {
+                    toggle()
+                }
+                SCROLL_STATE_IDLE -> {
+                    toggle()
+                }
+                SCROLL_STATE_TOUCH_SCROLL -> {
+                    toggle()
+                }
+            }
+        }
+
+        override fun onScroll(
+            view: AbsListView,
+            firstVisibleItem: Int,
+            visibleItemCount: Int,
+            totalItemCount: Int
+        ) {
+        }
+    }
+
+    private fun refreshList() {
+        var contentView: MutableList<Int> = ArrayList()
+        contentView.add(0)
+        contentView.add(1)
+        contentView.add(2)
+        detailAdapter.refreshAdapter(contentView)
+    }
+
     private fun toggle() {
         if (isFullscreen) {
+            refreshList()
             hide()
         } else {
+            refreshList()
             show()
         }
     }
@@ -217,6 +255,22 @@ class FullscreenActivity : AppCompatActivity() {
         mHandler.sendEmptyMessage(if (permission) Constants.checkFWSucc else Constants.checkFWFail)
     }
 
+
+    private fun checkBatteryPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val batteryPermission = PermissionUtils.isIgnoringBatteryOptimizations(
+                applicationContext
+            )
+            mHandler.sendEmptyMessage(if (batteryPermission) Constants.checkBatteryFail else Constants.checkBatterySucc)
+        }
+    }
+
+    private fun checkNotification() {
+        val permission: Boolean =
+            NotificationManagerCompat.from(applicationContext).areNotificationsEnabled()
+        mHandler.sendEmptyMessage(if (permission) Constants.checkNotifySucc else Constants.checkNotifyFail)
+    }
+
     //********************************************************************************************************************************************
     // 双进程保活机制 相关函数
     //********************************************************************************************************************************************
@@ -238,8 +292,9 @@ class FullscreenActivity : AppCompatActivity() {
         stopBackService()
     }
 
-    private class MyHandler(activity: Activity) : Handler(Looper.getMainLooper()) {
-        private val mActivity: WeakReference<Activity> = WeakReference(activity)
+
+    private val mHandler: Handler = object : Handler(Looper.getMainLooper()) {
+        @SuppressLint("NewApi")
         override fun handleMessage(msg: Message) {
             val what = msg.what
             when (what) {
@@ -247,49 +302,25 @@ class FullscreenActivity : AppCompatActivity() {
                 Constants.checkFWFail -> {
                     if (Constants.isDebug) {
                         Toast.makeText(
-                            mActivity.get()!!.applicationContext,
+                            mActivity,
                             R.string.no_float_permission,
                             Toast.LENGTH_SHORT
                         ).show()
                     }
-                    PermissionUtils.showOpenPermissionDialog(
-                        mActivity.get()!!.applicationContext,
-                        this
-                    )
+                    PermissionUtils.showOpenPermissionDialog(mActivity, this)
                 }
                 Constants.checkBatterySucc -> checkNotification()
                 Constants.checkBatteryFail -> {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        PermissionUtils.requestIgnoreBatteryOptimizations(
-                            mActivity.get()!!.applicationContext
-                        )
+                        PermissionUtils.requestIgnoreBatteryOptimizations(mActivity)
                     }
                     checkNotification()
                 }
                 Constants.checkNotifySucc -> {
                 }
-                Constants.checkNotifyFail -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    NotificationUtils.notificationGuide(mActivity.get()!!.applicationContext)
-                }
+                Constants.checkNotifyFail -> NotificationUtils.notificationGuide(mActivity)
                 Constants.checkPermission -> checkBatteryPermission()
             }
         }
-
-        fun checkBatteryPermission() {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                val batteryPermission = PermissionUtils.isIgnoringBatteryOptimizations(
-                    mActivity.get()!!.applicationContext
-                )
-                sendEmptyMessage(if (batteryPermission) Constants.checkBatteryFail else Constants.checkBatterySucc)
-            }
-        }
-
-        fun checkNotification() {
-            val permission: Boolean =
-                NotificationManagerCompat.from(mActivity.get()!!.applicationContext)
-                    .areNotificationsEnabled()
-            sendEmptyMessage(if (permission) Constants.checkNotifySucc else Constants.checkNotifyFail)
-        }
-
     }
 }

@@ -50,6 +50,7 @@
 
             <ProgressBar
                 style="@android:style/Widget.ProgressBar.Horizontal"
+                android:id="@+id/mem_progress"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginStart="20dp"
