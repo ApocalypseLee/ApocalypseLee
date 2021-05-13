@@ -1,15 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="60dp"
-    android:layout_height="60dp">
+    android:layout_width="100dp"
+    android:layout_height="100dp">
 
-    <TextView
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:background="@drawable/bg_colorful"
+<!--    <TextView-->
+<!--        android:layout_width="60dp"-->
+<!--        android:layout_height="60dp"-->
+<!--        android:background="@drawable/bg_colorful"-->
+<!--        android:gravity="center"-->
+<!--        android:text="@string/back_home"-->
+<!--        android:textColor="#FFF"-->
+<!--        android:textSize="14sp" />-->
+
+    <com.yt.apps.Widgets.BubbleView
         android:gravity="center"
-        android:text="@string/back_home"
-        android:textColor="#FFF"
-        android:textSize="14sp" />
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
 </LinearLayout>
