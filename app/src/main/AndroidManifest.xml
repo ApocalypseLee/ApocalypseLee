@@ -24,6 +24,8 @@
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" /> <!-- 防止进程被杀的电量优化白名单 -->
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" /> <!-- 如果接入了视频相关的广告, 请务必添加否则黑屏 -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.FORCE_STOP_PACKAGES"
+        tools:ignore="ProtectedPermissions" />
 
     <application
         android:name=".MyApplication"

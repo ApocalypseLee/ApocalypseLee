@@ -89,6 +89,34 @@ object SystemProperties {
         Log.d(TAG, "-----------before memory info : $beforeMem")
         var count = 0
         val pm: PackageManager = activity.packageManager
+
+//        val mActivityManager = activity.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+//        val method = Class.forName("android.app.ActivityManager").getMethod(
+//            "forceStopPackage",
+//            String::class.java
+//        )
+//
+//        val list: List<RunningAppProcessInfo> = am.getRunningAppProcesses()
+//        if (list != null) {
+//            for (i in list.indices) {
+//                val apinfo = list[i]
+//                val pkgList = apinfo.pkgList
+//                if (apinfo.importance > RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
+//                    // 清理后台进程
+//                    for (j in pkgList.indices) {
+//                        val pkg = pkgList[j]
+//                        if (pkg.matches("com.android.*".toRegex())) {
+//                            Log.d(TAG, "not clean is system android pid pkg= $pkg")
+//                        } else {
+//                            Log.d(TAG, "auto clean apk pkg= $pkg")
+//                            method.invoke(mActivityManager, pkgList[j]) //packageName是需要强制停止的应用程序包名
+//                            count++
+//                        }
+//                    }
+//                }
+//            }
+//        }
+
         if (infoList != null) {
             for (i in infoList.indices) {
                 val appProcessInfo = infoList[i]
@@ -96,10 +124,9 @@ object SystemProperties {
                 //importance 该进程的重要程度  分为几个级别，数值越低就越重要。
                 Log.d(TAG, "importance : " + appProcessInfo.importance)
 
-
                 // 一般数值大于RunningAppProcessInfo.IMPORTANCE_SERVICE的进程都长时间没用或者空进程了
                 // 一般数值大于RunningAppProcessInfo.IMPORTANCE_VISIBLE的进程都是非可见进程，也就是在后台运行着
-                if (appProcessInfo.importance > RunningAppProcessInfo.IMPORTANCE_SERVICE) {
+                if (appProcessInfo.importance > RunningAppProcessInfo.IMPORTANCE_VISIBLE) {
                     val pkgList = appProcessInfo.pkgList
                     for (j in pkgList.indices) { //pkgList 得到该进程下运行的包名
                         var appName: String? = null

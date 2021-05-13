@@ -19,8 +19,8 @@ class AlarmReceiver : BroadcastReceiver() {
 
     private val TAG = BroadcastReceiver::class.java.simpleName
     private var timer = 0
-    private val PRIORITY = 80 //百分比
-    private val INTERVAL = 1 //分钟
+    private val PRIORITY = 30 //百分比
+    private val INTERVAL = 30 //分钟
 
     override fun onReceive(context: Context, intent: Intent) {
         val action = intent.action
