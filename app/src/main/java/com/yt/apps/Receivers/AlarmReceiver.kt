@@ -19,8 +19,8 @@ class AlarmReceiver : BroadcastReceiver() {
 
     private val TAG = BroadcastReceiver::class.java.simpleName
     private var timer = 0
-    private val PRIORITY = 80 //百分比
-    private val INTERVAL = 1 //分钟
+    private val PRIORITY = 30 //百分比
+    private val INTERVAL = 30 //分钟
 
     override fun onReceive(context: Context, intent: Intent) {
         val action = intent.action
@@ -65,7 +65,7 @@ class AlarmReceiver : BroadcastReceiver() {
         } else {
             val notificationUtils = NotificationUtils(context)
             notificationUtils.clearAllNotification()
-            val content = "您有一条新的游戏内消息"
+            val content = context.resources.getString(R.string.hint)
             notificationUtils.sendNotificationFullScreen(
                 AlarmActivity::class.java,
                 title,
@@ -84,7 +84,7 @@ class AlarmReceiver : BroadcastReceiver() {
         } else {
             val notificationUtils = NotificationUtils(context)
             notificationUtils.clearAllNotification()
-            val content = "您有一条新的游戏内消息"
+            val content = context.resources.getString(R.string.hint)
             notificationUtils.sendNotificationFullScreen(
                 AdActivity::class.java,
                 title,
