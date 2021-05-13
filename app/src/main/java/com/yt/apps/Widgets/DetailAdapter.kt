@@ -14,8 +14,11 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import com.yt.apps.R
 import com.yt.apps.Utils.SystemProperties
+import com.yt.apps.model.CustomCallback
+import java.util.*
+import kotlin.collections.ArrayList
 
-class DetailAdapter(var activity: Activity, var context: Context) : BaseAdapter() {
+class DetailAdapter(var activity: Activity, var context: Context) : BaseAdapter(), CustomCallback {
     val VIEW_TYPE_HEAD = 0
     val VIEW_TYPE_DETAIL = 1
     val VIEW_TYPE_ACC = 2
@@ -149,7 +152,7 @@ class DetailAdapter(var activity: Activity, var context: Context) : BaseAdapter(
     }
 
     val recycleListener: View.OnClickListener = View.OnClickListener {
-        SystemProperties.clean(activity)
+        SystemProperties.clean(activity, customCallback = notice(null))
     }
 
     val accListener: View.OnClickListener = View.OnClickListener {
@@ -182,5 +185,13 @@ class DetailAdapter(var activity: Activity, var context: Context) : BaseAdapter(
         var accMem: TextView? = null
         var accPls: TextView? = null
         var accBtn: Button? = null
+    }
+
+    override fun notice(datamap: Map<String, Objects>?) {
+        val contentView: MutableList<Int> = ArrayList()
+        contentView.add(0)
+        contentView.add(1)
+        contentView.add(2)
+        refreshAdapter(contentView)
     }
 }

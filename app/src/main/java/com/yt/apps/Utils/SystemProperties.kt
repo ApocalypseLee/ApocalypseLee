@@ -80,7 +80,7 @@ object SystemProperties {
     }
 
     private const val TAG = "Clean"
-    fun clean(activity: Activity) {
+    fun clean(activity: Activity, customCallback: Unit) {
         //To change body of implemented methods use File | Settings | File Templates.
         val am = activity.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager?
         val infoList = am!!.runningAppProcesses
@@ -99,7 +99,7 @@ object SystemProperties {
 
                 // 一般数值大于RunningAppProcessInfo.IMPORTANCE_SERVICE的进程都长时间没用或者空进程了
                 // 一般数值大于RunningAppProcessInfo.IMPORTANCE_VISIBLE的进程都是非可见进程，也就是在后台运行着
-                if (appProcessInfo.importance > RunningAppProcessInfo.IMPORTANCE_VISIBLE) {
+                if (appProcessInfo.importance > RunningAppProcessInfo.IMPORTANCE_SERVICE) {
                     val pkgList = appProcessInfo.pkgList
                     for (j in pkgList.indices) { //pkgList 得到该进程下运行的包名
                         var appName: String? = null
