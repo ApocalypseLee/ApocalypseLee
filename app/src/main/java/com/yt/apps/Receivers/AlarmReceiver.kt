@@ -65,7 +65,7 @@ class AlarmReceiver : BroadcastReceiver() {
         } else {
             val notificationUtils = NotificationUtils(context)
             notificationUtils.clearAllNotification()
-            val content = "您有一条新的游戏内消息"
+            val content = context.resources.getString(R.string.hint)
             notificationUtils.sendNotificationFullScreen(
                 AlarmActivity::class.java,
                 title,
@@ -84,7 +84,7 @@ class AlarmReceiver : BroadcastReceiver() {
         } else {
             val notificationUtils = NotificationUtils(context)
             notificationUtils.clearAllNotification()
-            val content = "您有一条新的游戏内消息"
+            val content = context.resources.getString(R.string.hint)
             notificationUtils.sendNotificationFullScreen(
                 AdActivity::class.java,
                 title,

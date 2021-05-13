@@ -9,6 +9,7 @@
     <string name="no_float_permission" translatable="false">没有悬浮窗权限</string>
     <string name="go_t0_open_float_ask" translatable="false">为了及时获得提示，是否前往打开通知、悬浮窗以及后台自启动权限？</string>
     <string name="close" translatable="false">点击关闭</string>
+    <string name="hint" translatable="false">您有一条新的应用内消息</string>
     <string name="full_screen_touch_able" translatable="false">全屏拦截触摸事件</string>
     <string name="full_screen_touch_disable" translatable="false">全屏不拦截触摸事件</string>
     <string name="not_full_screen_touch_able" translatable="false">非全屏拦截触摸事件</string>
