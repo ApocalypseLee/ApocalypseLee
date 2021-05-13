@@ -12,7 +12,7 @@ import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
 import com.yt.apps.Utils.FloatWindowParamManager
 
-abstract class BaseFloatWindow(context: Context?) {
+abstract class BaseFloatWindow(var mContext: Context?) {
     val TAG = "FloatWindowBase"
 
     val FULLSCREEN_TOUCHABLE = 1
@@ -23,7 +23,6 @@ abstract class BaseFloatWindow(context: Context?) {
     lateinit var mLayoutParams: WindowManager.LayoutParams
     lateinit var mInflate: View
     lateinit var mWindowManager: WindowManager
-    var mContext: Context? = null
     private var mAdded = false
 
     //设置隐藏时是否是INVISIBLE
@@ -34,7 +33,6 @@ abstract class BaseFloatWindow(context: Context?) {
     var mHandler: Handler? = Handler(Looper.getMainLooper())
 
     init {
-        mContext = context
         create()
     }
 

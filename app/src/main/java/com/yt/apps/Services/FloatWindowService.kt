@@ -74,7 +74,6 @@ class FloatWindowService : Service() {
     private var mFollowTouchView: FollowTouchView? = null
     private var alarmFloatWindow: AlarmFloatWindow? = null
 
-    fun FloatWindowService() {}
 
     override fun onBind(intent: Intent?): IBinder? {
         // TODO: Return the communication channel to the service.

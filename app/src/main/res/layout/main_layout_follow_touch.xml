@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="100dp"
-    android:layout_height="100dp">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
 <!--    <TextView-->
 <!--        android:layout_width="60dp"-->
@@ -13,6 +13,7 @@
 <!--        android:textSize="14sp" />-->
 
     <com.yt.apps.Widgets.BubbleView
+        android:id="@+id/bubble_view"
         android:gravity="center"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>

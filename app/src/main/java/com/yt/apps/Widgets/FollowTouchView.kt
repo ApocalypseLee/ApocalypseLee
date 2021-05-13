@@ -11,12 +11,15 @@ import android.view.View.OnTouchListener
 import android.view.ViewConfiguration
 import com.blankj.utilcode.util.SizeUtils
 import com.yt.apps.R
+import com.yt.apps.Utils.SystemProperties
 import kotlin.math.roundToInt
 
-class FollowTouchView(private val context: Context) : BaseFloatWindow(context) {
+class FollowTouchView(context: Context) : BaseFloatWindow(context) {
     private var mScaledTouchSlop = 0
+    private lateinit var bubbleView:BubbleView
 
 
+    @SuppressLint("NewApi")
     override fun create() {
         super.create()
         mViewMode = WRAP_CONTENT_TOUCHABLE
@@ -24,7 +27,16 @@ class FollowTouchView(private val context: Context) : BaseFloatWindow(context) {
         val mAddX = SizeUtils.dp2px(100f)
         val mAddY = SizeUtils.dp2px(100f)
         inflate(R.layout.main_layout_follow_touch)
-        mScaledTouchSlop = ViewConfiguration.get(context).scaledTouchSlop
+
+        bubbleView = mInflate.findViewById(R.id.bubble_view)
+        bubbleView.setTextColor(mContext!!.getColor(R.color.colorAccent))
+        bubbleView.percent = 50
+        bubbleView.setInnerRadius(90f)
+        bubbleView.setOuterStrokeWidth(10f)
+        bubbleView.setGreedSize(30f)
+        bubbleView.setPercentSize(30f)
+
+        mScaledTouchSlop = ViewConfiguration.get(mContext).scaledTouchSlop
         mInflate.setOnTouchListener(object : OnTouchListener {
             private var mLastY = 0f
             private var mLastX = 0f

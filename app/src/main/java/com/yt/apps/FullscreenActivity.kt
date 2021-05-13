@@ -14,6 +14,7 @@ import androidx.core.app.NotificationManagerCompat
 import com.yt.apps.Services.*
 import com.yt.apps.Utils.NotificationUtils
 import com.yt.apps.Utils.PermissionUtils
+import com.yt.apps.Utils.UIUtils
 import com.yt.apps.Widgets.DetailAdapter
 
 /**
@@ -100,6 +101,9 @@ class FullscreenActivity : AppCompatActivity() {
         checkFWPermission()
 //        val intent = Intent(this, SplashActivity::class.java)
 //        startActivityForResult(intent, 1)
+        val fwIntent = Intent(this, FloatWindowService::class.java)
+        fwIntent.action = FloatWindowService.ACTION_FOLLOW_TOUCH
+        startService(fwIntent)
     }
 
     @SuppressLint("ClickableViewAccessibility")
