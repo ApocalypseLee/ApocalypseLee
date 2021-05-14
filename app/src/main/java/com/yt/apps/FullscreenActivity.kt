@@ -14,8 +14,13 @@ import androidx.core.app.NotificationManagerCompat
 import com.yt.apps.Services.*
 import com.yt.apps.Utils.NotificationUtils
 import com.yt.apps.Utils.PermissionUtils
-import com.yt.apps.Utils.UIUtils
+import com.yt.apps.Utils.SystemProperties
 import com.yt.apps.Widgets.DetailAdapter
+import com.yt.apps.data.MemoryEvent
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
+
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -27,6 +32,7 @@ class FullscreenActivity : AppCompatActivity() {
     private val hideHandler = Handler()
     private lateinit var detailAdapter: DetailAdapter
     private lateinit var mActivity: FullscreenActivity
+    private var run = false
 
     companion object {
         /**
@@ -93,6 +99,7 @@ class FullscreenActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         mActivity = this
+        EventBus.getDefault().register(this)
         // 启动双进程保活机制
         startBackService()
         initTask()
@@ -101,9 +108,10 @@ class FullscreenActivity : AppCompatActivity() {
         checkFWPermission()
 //        val intent = Intent(this, SplashActivity::class.java)
 //        startActivityForResult(intent, 1)
-        val fwIntent = Intent(this, FloatWindowService::class.java)
-        fwIntent.action = FloatWindowService.ACTION_FOLLOW_TOUCH
-        startService(fwIntent)
+        initFloatBubble()
+
+        run = true
+        memHandler.postDelayed(task, 1000)
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -145,6 +153,7 @@ class FullscreenActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        EventBus.getDefault().unregister(this)
         endAllService() // 结束双进程守护
         // Workaround in https://stackoverflow.com/questions/16283079/re-launch-of-activity-on-home-button-but-only-the-first-time/16447508
         if (!isTaskRoot) {
@@ -235,6 +244,15 @@ class FullscreenActivity : AppCompatActivity() {
         return true
     }
 
+    private fun initFloatBubble() {
+        val fwIntent = Intent(this, FloatWindowService::class.java)
+        fwIntent.action = FloatWindowService.ACTION_FOLLOW_TOUCH
+        fwIntent.putExtra(
+            FloatWindowService.FLAG_RES_ID,
+            SystemProperties.getUsedPercentValueInt(this)
+        )
+        startService(fwIntent)
+    }
 
     protected fun initTask() {
         val register = Intent(this, RegisterServService::class.java)
@@ -326,5 +344,23 @@ class FullscreenActivity : AppCompatActivity() {
                 Constants.checkPermission -> checkBatteryPermission()
             }
         }
+    }
+
+    private val memHandler = Handler(Looper.getMainLooper())
+    private val task: Runnable = object : Runnable {
+        override fun run() {
+            if (run) {
+                val memUsed = SystemProperties.getUsedMemory(mActivity)
+                val memTotal = SystemProperties.getTotalMemory(mActivity)
+                val event = MemoryEvent(memUsed.toDouble(), memTotal.toDouble())
+                EventBus.getDefault().postSticky(event)
+                memHandler.postDelayed(this, 1000)
+            }
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true, priority = 6)
+    fun onGetMessage(message: MemoryEvent) {
+        refreshList()
     }
 }

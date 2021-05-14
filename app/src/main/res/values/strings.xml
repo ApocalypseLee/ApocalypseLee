@@ -33,4 +33,5 @@
     <string name="acc_pls" translatable="false">请加速手机运行</string>
     <string name="recycle" translatable="false">立即清理</string>
     <string name="acc" translatable="false">立即加速</string>
+    <string name="mem_usage" translatable="false">内存占用</string>
 </resources>

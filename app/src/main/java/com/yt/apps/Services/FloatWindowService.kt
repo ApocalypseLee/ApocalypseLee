@@ -15,6 +15,7 @@ import com.yt.apps.Utils.NotificationUtils
 import com.yt.apps.Utils.PermissionUtils
 import com.yt.apps.Utils.RomUtils
 import com.yt.apps.Widgets.*
+import java.util.*
 
 class FloatWindowService : Service() {
 
@@ -124,7 +125,7 @@ class FloatWindowService : Service() {
 
     private fun showFollowTouch() {
         dismissFollowTouch()
-        mFollowTouchView = FollowTouchView(this@FloatWindowService)
+        mFollowTouchView = FollowTouchView(this@FloatWindowService, percent = resId)
         mFollowTouchView!!.show()
     }
 

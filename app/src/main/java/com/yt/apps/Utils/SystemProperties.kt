@@ -193,6 +193,12 @@ object SystemProperties {
         return mi.lowMemory
     }
 
+    fun getUsedPercentValueInt(activity: Activity): Int {
+        val used = getUsedMemory(activity)
+        val total = getTotalMemory(activity)
+        return (used.toDouble() / total.toDouble() * 100).toInt()
+    }
+
     fun getUsedPercentValue(activity: Activity): String {
         val dir = "/proc/meminfo"
         try {

@@ -9,14 +9,16 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.View.OnTouchListener
 import android.view.ViewConfiguration
-import com.blankj.utilcode.util.SizeUtils
+import com.yt.apps.FullscreenActivity
 import com.yt.apps.R
-import com.yt.apps.Utils.SystemProperties
+import com.yt.apps.data.MemoryEvent
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import kotlin.math.roundToInt
 
-class FollowTouchView(context: Context) : BaseFloatWindow(context) {
+class FollowTouchView(context: Context, private var percent: Int) : BaseFloatWindow(context) {
     private var mScaledTouchSlop = 0
-    private lateinit var bubbleView:BubbleView
+    private lateinit var bubbleView: BubbleView
 
 
     @SuppressLint("NewApi")
@@ -24,13 +26,13 @@ class FollowTouchView(context: Context) : BaseFloatWindow(context) {
         super.create()
         mViewMode = WRAP_CONTENT_TOUCHABLE
         mGravity = Gravity.START or Gravity.TOP
-        val mAddX = SizeUtils.dp2px(100f)
-        val mAddY = SizeUtils.dp2px(100f)
+//        val mAddX = SizeUtils.dp2px(100f)
+//        val mAddY = SizeUtils.dp2px(100f)
         inflate(R.layout.main_layout_follow_touch)
 
         bubbleView = mInflate.findViewById(R.id.bubble_view)
         bubbleView.setTextColor(mContext!!.getColor(R.color.colorAccent))
-        bubbleView.percent = 50
+        bubbleView.percent = percent
         bubbleView.setInnerRadius(90f)
         bubbleView.setOuterStrokeWidth(10f)
         bubbleView.setGreedSize(30f)
@@ -67,9 +69,14 @@ class FollowTouchView(context: Context) : BaseFloatWindow(context) {
                     MotionEvent.ACTION_UP -> {
                         val disX = x - mDownX
                         val disY = y - mDownY
-                        val sqrt = Math.sqrt(Math.pow(disX.toDouble(), 2.0) + Math.pow(disY.toDouble(), 2.0))
+                        val sqrt = Math.sqrt(
+                            Math.pow(disX.toDouble(), 2.0) + Math.pow(
+                                disY.toDouble(),
+                                2.0
+                            )
+                        )
                         if (sqrt < mScaledTouchSlop) {
-                            jumpHome()
+                            jumpAPP()
                         }
                     }
                 }
@@ -78,11 +85,22 @@ class FollowTouchView(context: Context) : BaseFloatWindow(context) {
         })
     }
 
+    private fun jumpAPP() {
+        val intent = Intent(mContext, FullscreenActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        mContext!!.startActivity(intent)
+    }
+
     private fun jumpHome() {
         val intent = Intent()
         intent.action = Intent.ACTION_MAIN
         intent.addCategory(Intent.CATEGORY_HOME)
         mContext!!.startActivity(intent)
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true, priority = 6)
+    fun onGetMessage(message: MemoryEvent) {
+        bubbleView.percent = message.getUsedPercent()
     }
 
     override fun onAddWindowFailed(e: Exception?) {

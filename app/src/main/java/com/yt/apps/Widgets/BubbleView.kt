@@ -8,6 +8,7 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.animation.LinearInterpolator
 import androidx.annotation.RequiresApi
+import com.yt.apps.R
 import kotlin.properties.Delegates
 
 
@@ -205,7 +206,7 @@ class BubbleView(context: Context?, attributeSet: AttributeSet? = null) : View(c
             outerCirclePaint.shader = shader
             invalidate()
         }
-    private val greedTip = "Greed Index"
+    private val greedTip = resources.getString(R.string.mem_usage)
 
     //文本的字体大小
     private var percentSize = 80f
@@ -407,7 +408,7 @@ class BubbleView(context: Context?, attributeSet: AttributeSet? = null) : View(c
         textPaint.isFakeBoldText = true
         textPaint.textSize = percentSize
         canvas.drawText(
-                percent.toString(),
+            "$percent%",
                 centerX.toFloat(),
                 centerY.toFloat() + textPaint.textSize / 2,
                 textPaint

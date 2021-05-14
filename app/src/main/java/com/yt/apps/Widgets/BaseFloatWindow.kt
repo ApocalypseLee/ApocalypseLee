@@ -11,6 +11,7 @@ import androidx.annotation.CallSuper
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
 import com.yt.apps.Utils.FloatWindowParamManager
+import org.greenrobot.eventbus.EventBus
 
 abstract class BaseFloatWindow(var mContext: Context?) {
     val TAG = "FloatWindowBase"
@@ -34,6 +35,7 @@ abstract class BaseFloatWindow(var mContext: Context?) {
 
     init {
         create()
+        EventBus.getDefault().register(this)
     }
 
     /**
@@ -100,6 +102,7 @@ abstract class BaseFloatWindow(var mContext: Context?) {
         if (mHandler != null) {
             mHandler!!.removeCallbacksAndMessages(null)
         }
+        EventBus.getDefault().unregister(this)
     }
 
     @CallSuper
