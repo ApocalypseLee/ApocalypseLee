@@ -37,6 +37,7 @@ class FollowTouchView(context: Context, private var percent: Int) : BaseFloatWin
         bubbleView.setOuterStrokeWidth(10f)
         bubbleView.setGreedSize(30f)
         bubbleView.setPercentSize(30f)
+        bubbleView.lifeDelegate = BubbleView.RESUME
 
         mScaledTouchSlop = ViewConfiguration.get(mContext).scaledTouchSlop
         mInflate.setOnTouchListener(object : OnTouchListener {

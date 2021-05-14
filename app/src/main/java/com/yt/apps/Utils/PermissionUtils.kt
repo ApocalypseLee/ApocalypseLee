@@ -5,15 +5,19 @@ import android.app.AlertDialog
 import android.app.AppOpsManager
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.content.pm.PackageManager.NameNotFoundException
 import android.net.Uri
 import android.os.*
 import android.provider.Settings
+import android.util.Log
 import androidx.annotation.RequiresApi
 import com.blankj.utilcode.util.AppUtils
 import com.yt.apps.Constants
 import com.yt.apps.MyApplication
 import com.yt.apps.R
 import com.yt.apps.Services.FloatWindowService
+
 
 object PermissionUtils {
 
@@ -107,4 +111,44 @@ object PermissionUtils {
         return false
     }
 
+    @SuppressLint("InlinedApi")
+    @RequiresApi(Build.VERSION_CODES.KITKAT)
+    fun needPermissionForBlocking(context: Context): Boolean {
+        return try {
+            val packageManager = context.packageManager
+            val applicationInfo = packageManager.getApplicationInfo(context.packageName, 0)
+            val appOpsManager = context.getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
+            val mode = appOpsManager.checkOpNoThrow(
+                AppOpsManager.OPSTR_GET_USAGE_STATS,
+                applicationInfo.uid,
+                applicationInfo.packageName
+            )
+            mode != AppOpsManager.MODE_ALLOWED
+        } catch (e: NameNotFoundException) {
+            true
+        }
+    }
+
+
+    fun startActivitySafely(intent: Intent, context: Context): Boolean {
+        return try {
+            if (isIntentAvailable(intent, context)) {
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                context.startActivity(intent)
+                true
+            } else {
+                false
+            }
+        } catch (e: Exception) {
+            Log.e(FloatWindowParamManager.TAG, "启动Activity失败！！！！！！")
+            false
+        }
+    }
+
+    fun isIntentAvailable(intent: Intent?, context: Context): Boolean {
+        return intent != null && context.packageManager.queryIntentActivities(
+            intent,
+            PackageManager.MATCH_DEFAULT_ONLY
+        ).size > 0
+    }
 }

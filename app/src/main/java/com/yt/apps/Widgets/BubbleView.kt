@@ -150,18 +150,18 @@ class BubbleView(context: Context?, attributeSet: AttributeSet? = null) : View(c
                 in 0..46 -> {
                     fWaveShader = LinearGradient(
                             0f, mHeight.toFloat(), 0f, mHeight * (1 - waveWaterLevelRatio),
-                            waveColors[0],
+                            waveColors[4],
                             null, Shader.TileMode.CLAMP
                     )
                     sWaveShader = LinearGradient(
                             0f, mHeight.toFloat(), 0f, mHeight * (1 - waveWaterLevelRatio),
-                            waveColors[1],
+                            waveColors[5],
                             null, Shader.TileMode.CLAMP
                     )
                     SweepGradient(
                             centerX.toFloat(),
                             centerY.toFloat(),
-                            circleColors[0],
+                            circleColors[2],
                             floatArrayOf(0f, value / 100f)
                     )
                 }
@@ -186,18 +186,18 @@ class BubbleView(context: Context?, attributeSet: AttributeSet? = null) : View(c
                 else -> {
                     fWaveShader = LinearGradient(
                             0f, mHeight.toFloat(), 0f, mHeight * (1 - waveWaterLevelRatio),
-                            waveColors[4],
+                            waveColors[0],
                             null, Shader.TileMode.CLAMP
                     )
                     sWaveShader = LinearGradient(
                             0f, mHeight.toFloat(), 0f, mHeight * (1 - waveWaterLevelRatio),
-                            waveColors[5],
+                            waveColors[1],
                             null, Shader.TileMode.CLAMP
                     )
                     SweepGradient(
                             centerX.toFloat(),
                             centerY.toFloat(),
-                            circleColors[2],
+                            circleColors[0],
                             floatArrayOf(0f, value / 100f)
                     )
                 }
@@ -236,7 +236,7 @@ class BubbleView(context: Context?, attributeSet: AttributeSet? = null) : View(c
         valueAnimator.duration = 2000
         valueAnimator.repeatCount = ValueAnimator.INFINITE
         valueAnimator.interpolator = LinearInterpolator()
-        valueAnimator.setFloatValues(0f, waveWidth)
+        valueAnimator.setFloatValues(waveWidth, 0f)
         valueAnimator.addUpdateListener { animation ->
             sAnimatedValue = animation.animatedValue as Float
             invalidate()
@@ -245,7 +245,7 @@ class BubbleView(context: Context?, attributeSet: AttributeSet? = null) : View(c
     }
 
     //一小段完整波浪的宽度
-    private var waveWidth = 0f
+    private var waveWidth = 200f
     var lifeDelegate by Delegates.observable(0) { _, old, new ->
         when (new) {
             RESUME -> onResume()

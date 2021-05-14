@@ -3,6 +3,10 @@ package com.yt.apps.Widgets
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
+import android.os.Build
+import android.provider.Settings
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.INVISIBLE
@@ -12,7 +16,9 @@ import android.widget.BaseAdapter
 import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.annotation.RequiresApi
 import com.yt.apps.R
+import com.yt.apps.Utils.PermissionUtils
 import com.yt.apps.Utils.SystemProperties
 import com.yt.apps.model.CustomCallback
 import java.util.*
@@ -151,8 +157,17 @@ class DetailAdapter(var activity: Activity, var context: Context) : BaseAdapter(
         view.tag = holderHeader
     }
 
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     val recycleListener: View.OnClickListener = View.OnClickListener {
         SystemProperties.clean(activity, customCallback = notice(null))
+           if(PermissionUtils.needPermissionForBlocking(context)){
+               PermissionUtils.startActivitySafely(
+                   Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS),
+                   activity.applicationContext
+               )
+        } else {
+            Log.println(Log.DEBUG, "detail", SystemProperties.printForegroundTask(activity))
+        }
     }
 
     val accListener: View.OnClickListener = View.OnClickListener {

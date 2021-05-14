@@ -3,17 +3,24 @@ package com.yt.apps.Utils
 import android.app.Activity
 import android.app.ActivityManager
 import android.app.ActivityManager.RunningAppProcessInfo
+import android.app.usage.UsageStats
+import android.app.usage.UsageStatsManager
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Environment
+import android.provider.Settings
 import android.text.TextUtils
 import android.util.Log
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileReader
 import java.io.IOException
 import java.lang.reflect.Method
+import java.util.*
 
 
 object SystemProperties {
@@ -306,5 +313,31 @@ object SystemProperties {
             }
         }
         return dir!!.delete()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP_MR1)
+    fun printForegroundTask(activity: Activity): String {
+        var currentApp = "NULL"
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            val usm = activity.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
+            val time = System.currentTimeMillis()
+            val appList =
+                usm.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, time - 1000 * 1000, time)
+            if (appList != null && appList.size > 0) {
+                val mySortedMap: SortedMap<Long, UsageStats> = TreeMap()
+                for (usageStats in appList) {
+                    mySortedMap[usageStats.lastTimeUsed] = usageStats
+                }
+                if (!mySortedMap.isEmpty()) {
+                    currentApp = mySortedMap[mySortedMap.lastKey()]!!.packageName
+                }
+            }
+        } else {
+            val am = activity.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+            val tasks = am.runningAppProcesses
+            currentApp = tasks[0].processName
+        }
+        Log.e("adapter", "Current App in foreground is: $currentApp")
+        return currentApp
     }
 }
